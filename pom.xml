@@ -1,0 +1,85 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.textrazor</groupId>
+	<artifactId>textrazor</artifactId>
+	<version>1.0.0</version>
+	<packaging>jar</packaging>
+
+	<name>textrazor</name>
+	<url>https://textrazor.com</url>
+
+	<licenses>
+		<license>
+			<name>MIT</name>
+			<url>http://opensource.org/licenses/MIT</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+
+	<scm>
+		<url>https://github.com/textrazor/textrazor-java</url>
+		<connection>scm:git:git@github.com:textrazor/textrazor-java.git</connection>
+		<developerConnection>scm:git:git@github.com:textrazor/textrazor-java.git</developerConnection>
+	</scm>
+
+	<developers>
+		<developer>
+			<id>crayston</id>
+			<name>Toby Crayston</name>
+			<email>toby@textrazor.com</email>
+		</developer>
+	</developers>
+
+	<!-- Dependencies -->
+	<dependencies>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-core</artifactId>
+			<version>${jackson-2-version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-annotations</artifactId>
+			<version>${jackson-2-version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>${jackson-2-version}</version>
+		</dependency>
+	</dependencies>
+
+	<!-- Use apache pom as parent, so we can release to the remote repo -->
+	<parent>
+		<groupId>org.sonatype.oss</groupId>
+		<artifactId>oss-parent</artifactId>
+		<version>7</version>
+	</parent>
+
+	<!-- Build settings and plugins -->
+	<build>
+		<plugins>
+			<!-- Require Java 1.5+ -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.5.1</version>
+				<configuration>
+					<compilerArgument>-Xlint</compilerArgument>
+					<compilerArgument>-g:lines,source</compilerArgument>
+					<source>1.5</source>
+					<target>1.5</target>
+				</configuration>
+			</plugin>
+
+		</plugins>
+	</build>
+	<description>Official Java SDK for the TextRazor Text Analytics API
+
+TextRazor offers state-of-the-art natural language processing tools through a simple API, allowing you to build semantic technology into your applications in minutes.  
+
+Hundreds of applications rely on TextRazor to understand unstructured text across a range of verticals, with use cases including social media monitoring, enterprise search, recommendation systems and ad targetting.</description>
+</project>
