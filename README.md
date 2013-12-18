@@ -13,7 +13,7 @@ Visit https://www.textrazor.com to find out more.
 Getting Started
 ===============
 
-- Download the latest [TextRazor JAR](https://github.com/crayston/textrazor-java/blob/master/bin/textrazor-1.0.0.jar).
+- Download the latest [TextRazor JAR](https://github.com/TextRazor/textrazor-java/blob/master/bin/textrazor-1.0.0.jar).
   
   TextRazor for Java depends on the Jackson JSON library, specifically jackson-core-2.1.4.jar, jackson-annotations-2.1.4.jar, jackson-databind-2.1.4.jar.  Ensure that these are on your classpath when running your project.
 
