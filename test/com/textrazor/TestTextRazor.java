@@ -1,5 +1,9 @@
 package com.textrazor;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+
 import com.textrazor.annotations.Custom;
 import com.textrazor.annotations.Entity;
 import com.textrazor.annotations.AnalyzedText;
@@ -27,11 +31,13 @@ public class TestTextRazor {
 		client.addExtractor("senses");
 		client.addExtractor("entity_companies");
 		
+		client.setEnrichmentQueries(Arrays.asList("fbase:/location/location/geolocation>/location/geocode/latitude", "fbase:/location/location/geolocation>/location/geocode/longitude"));
+		
 		String rules = "entity_companies(CompanyEntity) :- entity_type(CompanyEntity, 'Company').";
 		
 		client.setRules(rules);
 		
-		AnalyzedText response = client.analyze("Barclays misled shareholders and the public RBS about one of the biggest investments in the bank's history, a BBC Panorama investigation has found.");
+		AnalyzedText response = client.analyze("LONDON - Barclays misled shareholders and the public RBS about one of the biggest investments in the bank's history, a BBC Panorama investigation has found.");
 		
 		for (Sentence sentence : response.getResponse().getSentences()) {
 			for (Word word : sentence.getWords()) {
@@ -40,6 +46,18 @@ public class TestTextRazor {
 				
 				for (Entity entity : word.getEntities()) {
 					System.out.println("Matched Entity: " + entity.getEntityId());
+					
+					Map<String, List<String>> entityData = entity.getData();
+					List<String> latitudeValues = entityData.get("fbase:/location/location/geolocation>/location/geocode/latitude");
+					List<String> longitudeValues = entityData.get("fbase:/location/location/geolocation>/location/geocode/longitude");
+					
+					if (null != latitudeValues) {
+						System.out.println("Entity latitude: " + latitudeValues.get(0));
+					}
+					
+					if (null != longitudeValues) {
+						System.out.println("Entity longitude: " + longitudeValues.get(0));
+					}
 				}
 				
 				for (Sense sense: word.getSenses()) {
@@ -56,7 +74,6 @@ public class TestTextRazor {
 				
 				if (null != variable.getEntityValue()) {
 					for (Entity entity : variable.getEntityValue()) {
-						
 						System.out.println("Variable: " + variable.getKey() + " Value:" + entity.getEntityId());
 					}
 				}

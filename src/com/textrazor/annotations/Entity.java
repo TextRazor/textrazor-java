@@ -1,7 +1,9 @@
 package com.textrazor.annotations;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Entity extends Annotation {
 	
@@ -32,6 +34,8 @@ public class Entity extends Annotation {
 	private double relevanceScore;
 	
 	private double confidenceScore;
+	
+	private Map<String, List<String>> data = new HashMap<String, List<String>>();
 
 	/**
 	 * @return List of the {@link Word} objects that make up this entity.
@@ -137,6 +141,13 @@ public class Entity extends Annotation {
 	 */
 	public String getEntityEnglishId() {
 		return entityEnglishId;
+	}
+	
+	/**
+	 * @return A map of Query : List of result with data from enrichment queries that match this entity.
+	 */
+	public Map<String, List<String>> getData() {
+		return data;
 	}
 	
 	protected void addLinks(Response response) {

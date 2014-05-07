@@ -40,6 +40,8 @@ public class TextRazor {
 	private List<String> dbpediaTypeFilters;
 
 	private List<String> freebaseTypeFilters;
+	
+	private List<String> enrichmentQueries;
 
 	private String rules;
 	
@@ -65,6 +67,7 @@ public class TextRazor {
 		this.extractors = new ArrayList<String>();
 		this.dbpediaTypeFilters = new ArrayList<String>();
 		this.freebaseTypeFilters = new ArrayList<String>();
+		this.enrichmentQueries = new ArrayList<String>();
 	}
 
 	private String generatePOSTBody(String text) {
@@ -107,6 +110,15 @@ public class TextRazor {
 					payloadBuffer.append(URLEncoder.encode(typeFilter, "UTF-8"));
 				}
 			}
+			
+			if (null != enrichmentQueries) {
+				for (String query : enrichmentQueries) {
+					payloadBuffer.append("&");
+					payloadBuffer.append(URLEncoder.encode("entities.enrichmentQueries", "UTF-8"));
+					payloadBuffer.append("=");
+					payloadBuffer.append(URLEncoder.encode(query, "UTF-8"));	
+				}
+			}
 
 			if (null != languageOverride && !languageOverride.isEmpty()) {
 				payloadBuffer.append("&");
@@ -132,7 +144,7 @@ public class TextRazor {
 	/**
 	 * Makes a TextRazor request to analyze a string and returning TextRazor metadata.
 	 * 
-	 * @param text The content to analyze
+	 * @param text The content to analyze     
 	 * @return The TextRazor metadata
 	 * @throws NetworkException
 	 * @throws AnalysisException
@@ -190,6 +202,7 @@ public class TextRazor {
 				}
 			}
 			catch (IOException ex) {
+				ex.printStackTrace();
 				resultingInputStream = connection.getErrorStream();
 			}
 			
@@ -207,8 +220,6 @@ public class TextRazor {
 			}
 
 			connection.disconnect();
-			
-			//System.out.println(sbuff.toString());
 			
 			ObjectMapper mapper = new ObjectMapper(); 
 			
@@ -367,6 +378,22 @@ public class TextRazor {
 		this.languageOverride = languageOverride;
 	}
 
+	/**
+	 * Get a list of "Enrichment Queries", used to enrich the entity response with structured linked data.
+     * The syntax for these queries is documented at https://www.textrazor.com/enrichment. 
+	 */
+	public List<String> getEnrichmentQueries() {
+		return enrichmentQueries;
+	}
+	
+	/**
+	 * Set a list of "Enrichment Queries", used to enrich the entity response with structured linked data.
+     * The syntax for these queries is documented at https://www.textrazor.com/enrichment. 
+	 */
+	public void setEnrichmentQueries(List<String> enrichmentQueries) {
+		this.enrichmentQueries = enrichmentQueries;
+	}
+	
 	/**
 	 * Gets the list of DBPedia types to filter entity extraction. All returned entities must match at least one of these types. See the <a href="https://www.textrazor.com/types">Type Dictionary</a> for more details on supported types.
 	 * 
