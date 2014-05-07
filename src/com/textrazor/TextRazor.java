@@ -88,7 +88,7 @@ public class TextRazor {
 
 			for (String extractor : extractors) {
 				payloadBuffer.append("&");
-				payloadBuffer.append(URLEncoder.encode("extractors[]", "UTF-8"));
+				payloadBuffer.append(URLEncoder.encode("extractors", "UTF-8"));
 				payloadBuffer.append("=");
 				payloadBuffer.append(URLEncoder.encode(extractor, "UTF-8"));
 			}
@@ -96,7 +96,7 @@ public class TextRazor {
 			if (null != dbpediaTypeFilters) {
 				for (String typeFilter : dbpediaTypeFilters) {
 					payloadBuffer.append("&");
-					payloadBuffer.append(URLEncoder.encode("entityExtractionOptions.filterEntitiesToDBPediaTypes[]", "UTF-8"));
+					payloadBuffer.append(URLEncoder.encode("entities.filterDbpediaTypes", "UTF-8"));
 					payloadBuffer.append("=");
 					payloadBuffer.append(URLEncoder.encode(typeFilter, "UTF-8"));
 				}
@@ -105,7 +105,7 @@ public class TextRazor {
 			if (null != freebaseTypeFilters) {
 				for (String typeFilter : freebaseTypeFilters) {
 					payloadBuffer.append("&");
-					payloadBuffer.append(URLEncoder.encode("entityExtractionOptions.filterEntitiesToFreebaseTypes[]", "UTF-8"));
+					payloadBuffer.append(URLEncoder.encode("entities.filterFreebaseTypes", "UTF-8"));
 					payloadBuffer.append("=");
 					payloadBuffer.append(URLEncoder.encode(typeFilter, "UTF-8"));
 				}
