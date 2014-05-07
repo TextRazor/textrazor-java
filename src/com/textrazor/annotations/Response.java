@@ -5,8 +5,8 @@ import java.util.List;
 
 public class Response {
 
-	private List<Sentence> sentences;
-	
+	private List<Sentence> sentences = new ArrayList<Sentence>();
+
 	private List<Word> words = new ArrayList<Word>();
 
 	private List<Relation> relations;
@@ -24,9 +24,9 @@ public class Response {
 	private List<Property> properties;
 
 	private List<Custom> customAnnotations;
-	
+
 	private String customAnnotationOutput;
-	
+
 	private String language;
 
 	private boolean languageIsReliable;
@@ -94,14 +94,14 @@ public class Response {
 	public List<Custom> getCustomAnnotations() {
 		return customAnnotations;
 	}
-	
+
 	/**
 	 * @return Any output generated as part of the custom annotation process.
 	 */
 	public String getCustomAnnotationOutput() {
 		return customAnnotationOutput;
 	}
-	
+
 	/**
 	 * @return The ISO-639-2 language used to analyze this document, either explicitly provided as the languageOverride, or as detected by the language detector.
 	 */
@@ -117,45 +117,49 @@ public class Response {
 	}
 
 	protected void createAnnotationLinks() {
-		for (Sentence sentence : sentences) {
-			for (Word word : sentence.getWords()) {
-				words.add(word);
+		// If the user has requested the "words" extractor we can link the various annotations together for
+		// easy traversal.
+		if (null != sentences && !sentences.isEmpty()) {
+			for (Sentence sentence : sentences) {
+				for (Word word : sentence.getWords()) {
+					words.add(word);
+				}
 			}
-		}
 
-		if (null != nounPhrases) {
-			for (NounPhrase nounPhrase : nounPhrases) {
-				nounPhrase.addLinks(this);
+			if (null != nounPhrases) {
+				for (NounPhrase nounPhrase : nounPhrases) {
+					nounPhrase.addLinks(this);
+				}
 			}
-		}
 
-		if (null != entities) { 
-			for (Entity entity : entities) {
-				entity.addLinks(this);
+			if (null != entities) { 
+				for (Entity entity : entities) {
+					entity.addLinks(this);
+				}
 			}
-		}
 
-		if (null != entailments) {
-			for (Entailment entailment : entailments) {
-				entailment.addLinks(this);
+			if (null != entailments) {
+				for (Entailment entailment : entailments) {
+					entailment.addLinks(this);
+				}
 			}
-		}
-	
-		if (null != properties) {
-			for (Property property : properties) {
-				property.addLinks(this);
+
+			if (null != properties) {
+				for (Property property : properties) {
+					property.addLinks(this);
+				}
 			}
-		}
-	
-		if (null != relations) {
-			for (Relation relation : relations) {
-				relation.addLinks(this);
+
+			if (null != relations) {
+				for (Relation relation : relations) {
+					relation.addLinks(this);
+				}
 			}
-		}
-		
-		if (null != customAnnotations) {
-			for (Custom custom : customAnnotations) {
-				custom.addLinks(this);
+
+			if (null != customAnnotations) {
+				for (Custom custom : customAnnotations) {
+					custom.addLinks(this);
+				}
 			}
 		}
 	}
