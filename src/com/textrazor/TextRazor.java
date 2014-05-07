@@ -34,9 +34,11 @@ public class TextRazor {
 	private boolean doEncryption;
 
 	private boolean cleanupHTML;
-
+	
 	private String languageOverride;
 
+	private boolean allowOverlap;
+	
 	private List<String> dbpediaTypeFilters;
 
 	private List<String> freebaseTypeFilters;
@@ -63,7 +65,8 @@ public class TextRazor {
 		this.doEncryption = false;
 		this.doCompression = true;
 		this.cleanupHTML = false;
-
+		this.allowOverlap = true;
+		
 		this.extractors = new ArrayList<String>();
 		this.dbpediaTypeFilters = new ArrayList<String>();
 		this.freebaseTypeFilters = new ArrayList<String>();
@@ -111,6 +114,11 @@ public class TextRazor {
 				}
 			}
 			
+			payloadBuffer.append("&");
+			payloadBuffer.append(URLEncoder.encode("entities.allowOverlap", "UTF-8"));
+			payloadBuffer.append("=");
+			payloadBuffer.append(URLEncoder.encode(allowOverlap ? "true" : "false", "UTF-8"));
+			
 			if (null != enrichmentQueries) {
 				for (String query : enrichmentQueries) {
 					payloadBuffer.append("&");
@@ -119,7 +127,7 @@ public class TextRazor {
 					payloadBuffer.append(URLEncoder.encode(query, "UTF-8"));	
 				}
 			}
-
+			
 			if (null != languageOverride && !languageOverride.isEmpty()) {
 				payloadBuffer.append("&");
 				payloadBuffer.append(URLEncoder.encode("languageOverride", "UTF-8"));
@@ -358,6 +366,20 @@ public class TextRazor {
 		this.cleanupHTML = cleanupHTML;
 	}
 
+	/**
+	 * @return true if TextRazor is allowed to return overlapping entities.
+	 */
+	public boolean isAllowOverlap() {
+		return allowOverlap;
+	}
+
+	/**
+	 * @param allowOverlap to true to allow TextRazor to return overlapping entities.  Default true.
+	 */
+	public void setAllowOverlap(boolean allowOverlap) {
+		this.allowOverlap = allowOverlap;
+	}
+	
 	/**
 	 * Gets the ISO-639-2 language code to use to analyze content.
 	 * If null TextRazor will use the automatically identified language.
