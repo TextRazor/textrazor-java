@@ -119,11 +119,16 @@ public class Response {
 	protected void createAnnotationLinks() {
 		// If the user has requested the "words" extractor we can link the various annotations together for
 		// easy traversal.
+		
 		if (null != sentences && !sentences.isEmpty()) {
 			for (Sentence sentence : sentences) {
 				for (Word word : sentence.getWords()) {
 					words.add(word);
 				}
+			}
+			
+			for (Word word : words) {
+				word.addLinks(this);
 			}
 
 			if (null != nounPhrases) {

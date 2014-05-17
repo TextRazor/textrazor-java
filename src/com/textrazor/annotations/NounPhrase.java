@@ -1,5 +1,6 @@
 package com.textrazor.annotations;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class NounPhrase extends Annotation {
@@ -8,7 +9,7 @@ public class NounPhrase extends Annotation {
 
 	List<Integer> wordPositions;
 
-	List<Word> words;
+	List<Word> words = new ArrayList<Word>();
 
 	/**
 	 * @return A list of the {@link Word} objects in this phrase within their sentence.

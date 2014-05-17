@@ -44,7 +44,7 @@ public class Word extends Annotation {
 	
 	private Word parentWord;
 	
-	private List<Word> children;
+	private List<Word> children = new ArrayList<Word>();
 	
 	private String relationToParent;
 	
@@ -136,6 +136,10 @@ public class Word extends Annotation {
 	 */
 	public List<Word> getChildren() {
 		return children;
+	}
+	
+	protected void addChild(Word child) {
+		children.add(child);
 	}
 	
 	/**
@@ -238,5 +242,12 @@ public class Word extends Annotation {
 	
 	protected void addRelationParam(RelationParam param) {
 		relationParams.add(param);
+	}
+	
+	protected void addLinks(Response response) {
+		if (0 <= parentPosition) {
+			parentWord = response.getWords().get(parentPosition);
+			parentWord.addChild(this);
+		}
 	}
 }

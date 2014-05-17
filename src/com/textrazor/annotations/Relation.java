@@ -1,5 +1,6 @@
 package com.textrazor.annotations;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Relation extends Annotation {
@@ -8,7 +9,7 @@ public class Relation extends Annotation {
 
 	private List<Integer> wordPositions;
 
-	private List<Word> predicateWords;
+	private List<Word> predicateWords = new ArrayList<Word>();;
 
 	private List<RelationParam> params;
 
@@ -41,7 +42,7 @@ public class Relation extends Annotation {
 	}
 
 	protected void addLinks(Response response) {
-		if (null != wordPositions) {
+		if (null != wordPositions) {			
 			for (Integer position : wordPositions) {
 				Word word = response.getWords().get(position);
 				predicateWords.add(word);

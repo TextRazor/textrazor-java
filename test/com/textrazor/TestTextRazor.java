@@ -29,6 +29,9 @@ public class TestTextRazor {
 		client.addExtractor("entities");
 		client.addExtractor("entailments");
 		client.addExtractor("senses");
+		client.addExtractor("phrases");
+		client.addExtractor("dependency-trees");
+		client.addExtractor("relations");
 		client.addExtractor("entity_companies");
 		
 		client.setEnrichmentQueries(Arrays.asList("fbase:/location/location/geolocation>/location/geocode/latitude", "fbase:/location/location/geolocation>/location/geocode/longitude"));
