@@ -4,6 +4,12 @@ public class AnalyzedText {
 
 	private double time;
 	
+	private boolean ok;
+	
+	private String error;
+	
+	private String message;
+	
 	private Response response;
 
 	/** 
@@ -13,6 +19,27 @@ public class AnalyzedText {
 		return time;
 	}
 
+	/**
+	 * @return True if TextRazor successfully analyzed your document, False if there was some error.
+	 */
+	public boolean isOk() {
+		return ok;
+	}
+
+	/**
+	 * @return Descriptive error message of any problems that may have occurred during analysis, or null if there was no error.
+	 */
+	public String getError() {
+		return error;
+	}
+
+	/**
+	 * @return Any warning or informational messages returned from the server, or an null if there was no message.
+	 */
+	public String getMessage() {
+		return message;
+	}
+	
 	/**
 	 * @return The {@link Response} containing extracted TextRazor metadata.
 	 */

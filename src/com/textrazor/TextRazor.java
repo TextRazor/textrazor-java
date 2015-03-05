@@ -34,6 +34,12 @@ public class TextRazor {
 	private boolean doEncryption;
 
 	private boolean cleanupHTML;
+	private String cleanupMode;
+	private boolean cleanupReturnRaw;
+	private boolean cleanupReturnCleaned;
+	private boolean cleanupUseMetadata;
+	
+	private String downloadUserAgent;
 	
 	private String languageOverride;
 
@@ -64,23 +70,26 @@ public class TextRazor {
 
 		this.doEncryption = false;
 		this.doCompression = true;
+		
 		this.cleanupHTML = false;
+		this.cleanupUseMetadata = true;
+		this.cleanupReturnCleaned = false;
+		this.cleanupReturnRaw = false;
+		
 		this.allowOverlap = true;
 		
 		this.extractors = new ArrayList<String>();
 		this.dbpediaTypeFilters = new ArrayList<String>();
 		this.freebaseTypeFilters = new ArrayList<String>();
 		this.enrichmentQueries = new ArrayList<String>();
+		
+		
 	}
 
-	private String generatePOSTBody(String text) {
+	private StringBuffer generatePOSTBody() {
 		StringBuffer payloadBuffer = new StringBuffer();
 
 		try {
-			payloadBuffer.append(URLEncoder.encode("text", "UTF-8"));
-			payloadBuffer.append("=");
-			payloadBuffer.append(URLEncoder.encode(text, "UTF-8"));
-			payloadBuffer.append("&");
 			payloadBuffer.append(URLEncoder.encode("apiKey", "UTF-8"));
 			payloadBuffer.append("=");
 			payloadBuffer.append(URLEncoder.encode(apiKey, "UTF-8"));
@@ -88,7 +97,34 @@ public class TextRazor {
 			payloadBuffer.append(URLEncoder.encode("cleanupHTML", "UTF-8"));
 			payloadBuffer.append("=");
 			payloadBuffer.append(URLEncoder.encode(cleanupHTML ? "true" : "false", "UTF-8"));
-
+			
+			if (null != cleanupMode) {
+				payloadBuffer.append("&");
+				payloadBuffer.append(URLEncoder.encode("cleanupMode", "UTF-8"));
+				payloadBuffer.append("=");
+				payloadBuffer.append(URLEncoder.encode(cleanupMode, "UTF-8"));
+			}
+			
+			payloadBuffer.append("&");
+			payloadBuffer.append(URLEncoder.encode("cleanupReturnRaw", "UTF-8"));
+			payloadBuffer.append("=");
+			payloadBuffer.append(URLEncoder.encode(cleanupReturnRaw ? "true" : "false", "UTF-8"));
+			payloadBuffer.append("&");
+			payloadBuffer.append(URLEncoder.encode("cleanupReturnCleaned", "UTF-8"));
+			payloadBuffer.append("=");
+			payloadBuffer.append(URLEncoder.encode(cleanupReturnCleaned ? "true" : "false", "UTF-8"));
+			payloadBuffer.append("&");
+			payloadBuffer.append(URLEncoder.encode("cleanupUseMetadata", "UTF-8"));
+			payloadBuffer.append("=");
+			payloadBuffer.append(URLEncoder.encode(cleanupUseMetadata ? "true" : "false", "UTF-8"));
+			
+			if (null != downloadUserAgent) {
+				payloadBuffer.append("&");
+				payloadBuffer.append(URLEncoder.encode("downloadUserAgent", "UTF-8"));
+				payloadBuffer.append("=");
+				payloadBuffer.append(URLEncoder.encode(downloadUserAgent, "UTF-8"));
+			}
+			
 			for (String extractor : extractors) {
 				payloadBuffer.append("&");
 				payloadBuffer.append(URLEncoder.encode("extractors", "UTF-8"));
@@ -146,28 +182,10 @@ public class TextRazor {
 			throw new RuntimeException("Could not url encode form params.");
 		}
 
-		return payloadBuffer.toString();
+		return payloadBuffer;
 	}
 
-	/**
-	 * Makes a TextRazor request to analyze a string and returning TextRazor metadata.
-	 * 
-	 * @param text The content to analyze     
-	 * @return The TextRazor metadata
-	 * @throws NetworkException
-	 * @throws AnalysisException
-	 */
-	public AnalyzedText analyze(String text) throws NetworkException, AnalysisException {
-		if (null == text) {
-			throw new RuntimeException("text param cannot be null.");
-		}
-
-		if (null == extractors || 0 == extractors.size()) {
-			throw new RuntimeException("You must specify at least 1 extractor.");	
-		}
-
-		String requestBody = generatePOSTBody(text);
-
+	private AnalyzedText sendRequest(String requestBody) throws AnalysisException, NetworkException {
 		URL url = null;
 		HttpURLConnection connection = null;
 
@@ -245,6 +263,71 @@ public class TextRazor {
 			throw new NetworkException("Network Error when connecting to TextRazor", e);
 		}
 	}
+	
+	/**
+	 * Makes a TextRazor request to analyze a string and returning TextRazor metadata.
+	 * 
+	 * @param text The content to analyze     
+	 * @return The TextRazor metadata
+	 * @throws NetworkException
+	 * @throws AnalysisException
+	 */
+	public AnalyzedText analyze(String text) throws NetworkException, AnalysisException {
+		if (null == text) {
+			throw new RuntimeException("text param cannot be null.");
+		}
+
+		if (null == extractors || 0 == extractors.size()) {
+			throw new RuntimeException("You must specify at least 1 extractor.");	
+		}
+
+		StringBuffer requestBody = generatePOSTBody();
+
+		try {
+			requestBody.append("&");
+			requestBody.append(URLEncoder.encode("text", "UTF-8"));
+			requestBody.append("=");
+			requestBody.append(URLEncoder.encode(text, "UTF-8"));
+			
+		} catch (UnsupportedEncodingException e) {
+			throw new RuntimeException("Could not url encode form params.");
+		}
+
+		return sendRequest(requestBody.toString());
+	}
+	
+	/**
+	 * Makes a TextRazor request to analyze a URL and return TextRazor metadata.
+	 * 
+	 * @param url The content to analyze     
+	 * @return The TextRazor metadata
+	 * @throws NetworkException
+	 * @throws AnalysisException
+	 */
+	public AnalyzedText analyzeUrl(String url) throws NetworkException, AnalysisException {
+		if (null == url) {
+			throw new RuntimeException("url param cannot be null.");
+		}
+
+		if (null == extractors || 0 == extractors.size()) {
+			throw new RuntimeException("You must specify at least 1 extractor.");	
+		}
+
+		StringBuffer requestBody = generatePOSTBody();
+
+		try {
+			requestBody.append("&");
+			requestBody.append(URLEncoder.encode("url", "UTF-8"));
+			requestBody.append("=");
+			requestBody.append(URLEncoder.encode(url, "UTF-8"));
+			
+		} catch (UnsupportedEncodingException e) {
+			throw new RuntimeException("Could not url encode form params.");
+		}
+
+		return sendRequest(requestBody.toString());
+	}
+
 
 	/**
 	 * @return The API Key used to authenticate requests.
@@ -266,7 +349,90 @@ public class TextRazor {
 	public String getTextrazorEndpoint() {
 		return textrazorEndpoint;
 	}
-
+	
+	/**
+	 * @return The TextRazor preprocessing cleanup mode.
+	 */
+	public String getCleanupMode() {
+		return cleanupMode;
+	}
+	
+	/**
+	 * @param cleanupMode
+	 * 
+	 * Controls the preprocessing cleanup mode that TextRazor will apply to your content before analysis. For all options aside from "raw" any position offsets returned will apply to the final cleaned text, not the raw HTML. If the cleaned text is required please see the cleanup_return_cleaned option.
+	 *
+	 * Valid Options:
+	 * raw         - Content is analyzed "as-is", with no preprocessing.
+	 * stripTags   - All Tags are removed from the document prior to analysis. This will remove all HTML, XML tags, but the content of headings, menus will remain. This is a good option for analysis of HTML pages that aren't long form documents.
+	 * cleanHTML   - Boilerplate HTML is removed prior to analysis, including tags, comments, menus, leaving only the body of the article.
+	 */
+	public void setCleanupMode(String cleanupMode) {
+		this.cleanupMode = cleanupMode;
+	}
+	
+	/**
+	 * @return true the TextRazor response will contain the raw_text property, the text it analyzed after preprocessing.
+	 */
+	public boolean getCleanupReturnRaw() {
+		return cleanupReturnRaw;
+	}
+	
+	/**
+	 * @param cleanupReturnRaw When true, the TextRazor response will contain the raw_text property, the original text TextRazor received or downloaded before cleaning.
+	 *   	  To save bandwidth, only set this to true if you need it in your application. Defaults to false.
+	 */
+	public void setCleanupReturnRaw(boolean cleanupReturnRaw) {
+		this.cleanupReturnRaw = cleanupReturnRaw;
+	}
+	
+	/**
+	 * @return true the TextRazor response will contain the cleaned_text property, the text it analyzed after preprocessing.
+	 */
+	public boolean getCleanupReturnCleaned() {
+		return cleanupReturnCleaned;
+	}
+	
+	/**
+	 * @param cleanupReturnCleaned When true, the TextRazor response will contain the cleaned_text property, the text it analyzed after preprocessing.
+	 * 		  To save bandwidth, only set this to true if you need it in your application. Defaults to false.
+	 */
+	public void setCleanupReturnCleaned(boolean cleanupReturnCleaned) {
+		this.cleanupReturnCleaned = cleanupReturnCleaned;
+	}
+	
+	/**
+	 * @return true TextRazor will use metadata extracted from your document to help in the disambiguation/extraction process.
+	 */
+	public boolean getCleanupUseMetadata() {
+		return cleanupUseMetadata;
+	}
+	
+	/**
+	 * @param cleanupUseMetadata When true TextRazor will use metadata extracted from your document to help in the disambiguation/extraction process.
+	 * 		  This include HTML titles and metadata, and can significantly improve results for shorter documents without much other content.
+     *		  This option has no effect when cleanup_mode is 'raw'. Defaults to True.
+	 */
+	public void setCleanupUseMetadata(boolean cleanupUseMetadata) {
+		this.cleanupUseMetadata = cleanupUseMetadata;
+	}
+	
+	/**
+	 * @return The User-Agent header to be used when downloading over HTTP.
+	 */
+	public String getDownloadUserAgent() {
+		return downloadUserAgent;
+	}
+	
+	/**
+	 * @param downloadUserAgent The User-Agent header to be used when downloading over HTTP. This should be a descriptive string identifying your application, or an end user's browser user agent if you are performing live requests from a given user.
+	 *
+	 * 	      Defaults to "TextRazor Downloader (https://www.textrazor.com)"
+	 */
+	public void setDownloadUserAgent(String downloadUserAgent) {
+		this.downloadUserAgent = downloadUserAgent;
+	}
+	
 	/**
 	 * @param textrazorEndpoint The custom TextRazor Endpoint for requests made by this class.
 	 */

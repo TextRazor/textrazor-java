@@ -31,7 +31,6 @@ public class Response {
 
 	private boolean languageIsReliable;
 
-
 	/**
 	 * @return List of {@link Sentence} objects that were extracted from your text.
 	 */
