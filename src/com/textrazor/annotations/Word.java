@@ -42,6 +42,8 @@ public class Word extends Annotation {
 	
 	private int parentPosition;
 	
+	private boolean hasParentPosition = false;
+	
 	private Word parentWord;
 	
 	private List<Word> children = new ArrayList<Word>();
@@ -118,10 +120,22 @@ public class Word extends Annotation {
 	}
 
 	/**
+	 * @return True if this word has a grammatical parent.
+	 */
+	public boolean getHasParentPosition() {
+		return hasParentPosition;
+	}
+	
+	/**
 	 * @return The position of the grammatical parent of this word, or null if this word is either at the root of the sentence or the "dependency-trees" extractor was not requested.
 	 */
 	public int getParentPosition() {
 		return parentPosition;
+	}
+	
+	public void setParentPosition(int parentPosition) {
+		this.hasParentPosition = true;
+		this.parentPosition = parentPosition;
 	}
 
 	/**
@@ -245,7 +259,7 @@ public class Word extends Annotation {
 	}
 	
 	protected void addLinks(Response response) {
-		if (0 <= parentPosition) {
+		if (hasParentPosition && 0 <= parentPosition) {
 			parentWord = response.getWords().get(parentPosition);
 			parentWord.addChild(this);
 		}
