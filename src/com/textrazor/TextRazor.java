@@ -100,27 +100,27 @@ public class TextRazor {
 			
 			if (null != cleanupMode) {
 				payloadBuffer.append("&");
-				payloadBuffer.append(URLEncoder.encode("cleanupMode", "UTF-8"));
+				payloadBuffer.append(URLEncoder.encode("cleanup.mode", "UTF-8"));
 				payloadBuffer.append("=");
 				payloadBuffer.append(URLEncoder.encode(cleanupMode, "UTF-8"));
 			}
 			
 			payloadBuffer.append("&");
-			payloadBuffer.append(URLEncoder.encode("cleanupReturnRaw", "UTF-8"));
+			payloadBuffer.append(URLEncoder.encode("cleanup.returnRaw", "UTF-8"));
 			payloadBuffer.append("=");
 			payloadBuffer.append(URLEncoder.encode(cleanupReturnRaw ? "true" : "false", "UTF-8"));
 			payloadBuffer.append("&");
-			payloadBuffer.append(URLEncoder.encode("cleanupReturnCleaned", "UTF-8"));
+			payloadBuffer.append(URLEncoder.encode("cleanup.returnCleaned", "UTF-8"));
 			payloadBuffer.append("=");
 			payloadBuffer.append(URLEncoder.encode(cleanupReturnCleaned ? "true" : "false", "UTF-8"));
 			payloadBuffer.append("&");
-			payloadBuffer.append(URLEncoder.encode("cleanupUseMetadata", "UTF-8"));
+			payloadBuffer.append(URLEncoder.encode("cleanup.useMetadata", "UTF-8"));
 			payloadBuffer.append("=");
 			payloadBuffer.append(URLEncoder.encode(cleanupUseMetadata ? "true" : "false", "UTF-8"));
 			
 			if (null != downloadUserAgent) {
 				payloadBuffer.append("&");
-				payloadBuffer.append(URLEncoder.encode("downloadUserAgent", "UTF-8"));
+				payloadBuffer.append(URLEncoder.encode("download.userAgent", "UTF-8"));
 				payloadBuffer.append("=");
 				payloadBuffer.append(URLEncoder.encode(downloadUserAgent, "UTF-8"));
 			}

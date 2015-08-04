@@ -30,6 +30,10 @@ public class Response {
 	private String language;
 
 	private boolean languageIsReliable;
+	
+	private String cleanedText;
+	
+	private String rawText;
 
 	/**
 	 * @return List of {@link Sentence} objects that were extracted from your text.
@@ -113,6 +117,20 @@ public class Response {
 	 */
 	public boolean isLanguageIsReliable() {
 		return languageIsReliable;
+	}
+	
+	/**
+	 * @return When the setCleanupReturnCleaned option is enabled, contains the input text after any cleanup/article extraction.
+	 */
+	public String getCleanedText() {
+		return cleanedText;
+	}
+	
+	/**
+	 * @return When the setCleanupReturnRaw option is enabled, contains the input text before any cleanup.
+	 */
+	public String getRawText() {
+		return rawText;
 	}
 
 	protected void createAnnotationLinks() {
