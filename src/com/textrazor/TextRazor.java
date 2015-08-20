@@ -1,57 +1,37 @@
 package com.textrazor;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.Reader;
 import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.Inflater;
-import java.util.zip.InflaterInputStream;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.textrazor.annotations.AnalyzedText;
+import com.textrazor.net.QueryBuilder;
+import com.textrazor.net.TextRazorConnection;
 
-public class TextRazor {
+public class TextRazor extends TextRazorConnection {
+	private List<String> extractors = new ArrayList<String>();
 
-	private String apiKey;
-
-	private String textrazorEndpoint;
-
-	private String secureTextrazorEndpoint;
-
-	private List<String> extractors;
-
-	private boolean doCompression;
-
-	private boolean doEncryption;
-
-	private boolean cleanupHTML;
+	private boolean cleanupHTML = false;
 	private String cleanupMode;
-	private boolean cleanupReturnRaw;
-	private boolean cleanupReturnCleaned;
-	private boolean cleanupUseMetadata;
+	private boolean cleanupReturnRaw = false;
+	private boolean cleanupReturnCleaned = false;
+	private boolean cleanupUseMetadata = true;
 	
 	private String downloadUserAgent;
 	
 	private String languageOverride;
 
-	private boolean allowOverlap;
+	private boolean allowOverlap = true;
 	
-	private List<String> dbpediaTypeFilters;
-
-	private List<String> freebaseTypeFilters;
+	private List<String> dbpediaTypeFilters = new ArrayList<String>();
+	private List<String> freebaseTypeFilters = new ArrayList<String>();
 	
-	private List<String> enrichmentQueries;
+	private List<String> enrichmentQueries = new ArrayList<String>();
 
 	private String rules;
+
+	private List<String> entityDictionaries;
 	
 	/**
 	 * Creates a new TextRazor client with the specified API Key.
@@ -59,210 +39,36 @@ public class TextRazor {
 	 * @param apiKey
 	 */
 	public TextRazor(String apiKey) {
-		if (apiKey == null) {
-			throw new RuntimeException("You must provide a TextRazor API key");
-		}
-
-		this.apiKey = apiKey;
-
-		this.textrazorEndpoint = "http://api.textrazor.com/";
-		this.secureTextrazorEndpoint = "https://api.textrazor.com/";
-
-		this.doEncryption = false;
-		this.doCompression = true;
-		
-		this.cleanupHTML = false;
-		this.cleanupUseMetadata = true;
-		this.cleanupReturnCleaned = false;
-		this.cleanupReturnRaw = false;
-		
-		this.allowOverlap = true;
-		
-		this.extractors = new ArrayList<String>();
-		this.dbpediaTypeFilters = new ArrayList<String>();
-		this.freebaseTypeFilters = new ArrayList<String>();
-		this.enrichmentQueries = new ArrayList<String>();
-		
-		
+		super(apiKey);
 	}
 
-	private StringBuffer generatePOSTBody() {
-		StringBuffer payloadBuffer = new StringBuffer();
-
+	private QueryBuilder generatePOSTBody() {
+		QueryBuilder queryBuilder = new QueryBuilder();
+		
 		try {
-			payloadBuffer.append(URLEncoder.encode("apiKey", "UTF-8"));
-			payloadBuffer.append("=");
-			payloadBuffer.append(URLEncoder.encode(apiKey, "UTF-8"));
-			payloadBuffer.append("&");
-			payloadBuffer.append(URLEncoder.encode("cleanupHTML", "UTF-8"));
-			payloadBuffer.append("=");
-			payloadBuffer.append(URLEncoder.encode(cleanupHTML ? "true" : "false", "UTF-8"));
+			queryBuilder.addParam("cleanupHTML", cleanupHTML ? "true" : "false")
+						.addParam("cleanup.mode", cleanupMode)
+						.addParam("cleanup.returnRaw", cleanupReturnRaw)
+						.addParam("cleanup.returnCleaned", cleanupReturnCleaned)
+						.addParam("cleanup.useMetadata", cleanupUseMetadata)
+						.addParam("download.userAgent", downloadUserAgent)
+						.addParam("extractors", extractors)
+						.addParam("entities.filterDbpediaTypes", dbpediaTypeFilters)
+						.addParam("entities.filterFreebaseTypes", freebaseTypeFilters)
+						.addParam("entities.dictionaries", entityDictionaries)
+						.addParam("entities.allowOverlap", allowOverlap)
+						.addParam("entities.enrichmentQueries", enrichmentQueries)
+						.addParam("entities.languageOverride", languageOverride)
+						.addParam("rules", rules);
 			
-			if (null != cleanupMode) {
-				payloadBuffer.append("&");
-				payloadBuffer.append(URLEncoder.encode("cleanup.mode", "UTF-8"));
-				payloadBuffer.append("=");
-				payloadBuffer.append(URLEncoder.encode(cleanupMode, "UTF-8"));
-			}
-			
-			payloadBuffer.append("&");
-			payloadBuffer.append(URLEncoder.encode("cleanup.returnRaw", "UTF-8"));
-			payloadBuffer.append("=");
-			payloadBuffer.append(URLEncoder.encode(cleanupReturnRaw ? "true" : "false", "UTF-8"));
-			payloadBuffer.append("&");
-			payloadBuffer.append(URLEncoder.encode("cleanup.returnCleaned", "UTF-8"));
-			payloadBuffer.append("=");
-			payloadBuffer.append(URLEncoder.encode(cleanupReturnCleaned ? "true" : "false", "UTF-8"));
-			payloadBuffer.append("&");
-			payloadBuffer.append(URLEncoder.encode("cleanup.useMetadata", "UTF-8"));
-			payloadBuffer.append("=");
-			payloadBuffer.append(URLEncoder.encode(cleanupUseMetadata ? "true" : "false", "UTF-8"));
-			
-			if (null != downloadUserAgent) {
-				payloadBuffer.append("&");
-				payloadBuffer.append(URLEncoder.encode("download.userAgent", "UTF-8"));
-				payloadBuffer.append("=");
-				payloadBuffer.append(URLEncoder.encode(downloadUserAgent, "UTF-8"));
-			}
-			
-			for (String extractor : extractors) {
-				payloadBuffer.append("&");
-				payloadBuffer.append(URLEncoder.encode("extractors", "UTF-8"));
-				payloadBuffer.append("=");
-				payloadBuffer.append(URLEncoder.encode(extractor, "UTF-8"));
-			}
-
-			if (null != dbpediaTypeFilters) {
-				for (String typeFilter : dbpediaTypeFilters) {
-					payloadBuffer.append("&");
-					payloadBuffer.append(URLEncoder.encode("entities.filterDbpediaTypes", "UTF-8"));
-					payloadBuffer.append("=");
-					payloadBuffer.append(URLEncoder.encode(typeFilter, "UTF-8"));
-				}
-			}
-
-			if (null != freebaseTypeFilters) {
-				for (String typeFilter : freebaseTypeFilters) {
-					payloadBuffer.append("&");
-					payloadBuffer.append(URLEncoder.encode("entities.filterFreebaseTypes", "UTF-8"));
-					payloadBuffer.append("=");
-					payloadBuffer.append(URLEncoder.encode(typeFilter, "UTF-8"));
-				}
-			}
-			
-			payloadBuffer.append("&");
-			payloadBuffer.append(URLEncoder.encode("entities.allowOverlap", "UTF-8"));
-			payloadBuffer.append("=");
-			payloadBuffer.append(URLEncoder.encode(allowOverlap ? "true" : "false", "UTF-8"));
-			
-			if (null != enrichmentQueries) {
-				for (String query : enrichmentQueries) {
-					payloadBuffer.append("&");
-					payloadBuffer.append(URLEncoder.encode("entities.enrichmentQueries", "UTF-8"));
-					payloadBuffer.append("=");
-					payloadBuffer.append(URLEncoder.encode(query, "UTF-8"));	
-				}
-			}
-			
-			if (null != languageOverride && !languageOverride.isEmpty()) {
-				payloadBuffer.append("&");
-				payloadBuffer.append(URLEncoder.encode("languageOverride", "UTF-8"));
-				payloadBuffer.append("=");
-				payloadBuffer.append(URLEncoder.encode(languageOverride, "UTF-8"));
-			}
-			
-			if (null != rules && !rules.isEmpty()) {
-				payloadBuffer.append("&");
-				payloadBuffer.append(URLEncoder.encode("rules", "UTF-8"));
-				payloadBuffer.append("=");
-				payloadBuffer.append(URLEncoder.encode(rules, "UTF-8"));
-			}
 		}
 		catch (UnsupportedEncodingException e) {
 			throw new RuntimeException("Could not url encode form params.");
 		}
 
-		return payloadBuffer;
+		return queryBuilder;
 	}
 
-	private AnalyzedText sendRequest(String requestBody) throws AnalysisException, NetworkException {
-		URL url = null;
-		HttpURLConnection connection = null;
-
-		try {
-			if (doEncryption) {
-				url = new URL(secureTextrazorEndpoint);
-			}
-			else {
-				url = new URL(textrazorEndpoint);
-			}
-
-			connection = (HttpURLConnection)url.openConnection();
-			connection.setRequestMethod("POST");
-			connection.setDoOutput(true);
-
-			connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-			connection.setRequestProperty("Content-Length", ""+ requestBody.length());
-
-			if (doCompression) {
-				connection.setRequestProperty("Accept-Encoding", "gzip, deflate");
-			}
-
-			OutputStream os = connection.getOutputStream();
-			os.write( requestBody.getBytes() );
-
-			connection.connect();
-
-			InputStream resultingInputStream;
-			try {
-				String encoding = connection.getContentEncoding();
-				
-				if (encoding != null && encoding.equalsIgnoreCase("gzip")) {
-					resultingInputStream = new GZIPInputStream(connection.getInputStream());
-				} 
-				else if (encoding != null && encoding.equalsIgnoreCase("deflate")) {
-					resultingInputStream = new InflaterInputStream(connection.getInputStream(), new Inflater(true));
-				}
-				else {
-					resultingInputStream = connection.getInputStream();
-				}
-			}
-			catch (IOException ex) {
-				ex.printStackTrace();
-				resultingInputStream = connection.getErrorStream();
-			}
-			
-			final Reader reader = new InputStreamReader(resultingInputStream);
-			final char[] buf = new char[16384];
-			int read;
-			final StringBuffer sbuff = new StringBuffer();
-			while((read = reader.read(buf)) > 0) {
-				sbuff.append(buf, 0, read);
-			}
-
-			int status = connection.getResponseCode();
-			if (status != 200) {
-				throw new AnalysisException(status, sbuff.toString());
-			}
-
-			connection.disconnect();
-			
-			ObjectMapper mapper = new ObjectMapper(); 
-			
-			// Note - removing this is handy for debugging holes in the library, but for production
-			// use we don't want to fail on new properties to allow forward compatibility.
-			mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-			
-			AnalyzedText response = mapper.readValue(sbuff.toString(), AnalyzedText.class);
-		
-			response.createAnnotationLinks();
-					
-			return response;
-		}
-		catch (IOException e) {
-			throw new NetworkException("Network Error when connecting to TextRazor", e);
-		}
-	}
 	
 	/**
 	 * Makes a TextRazor request to analyze a string and returning TextRazor metadata.
@@ -281,19 +87,25 @@ public class TextRazor {
 			throw new RuntimeException("You must specify at least 1 extractor.");	
 		}
 
-		StringBuffer requestBody = generatePOSTBody();
+		QueryBuilder requestBody = generatePOSTBody();
 
 		try {
-			requestBody.append("&");
-			requestBody.append(URLEncoder.encode("text", "UTF-8"));
-			requestBody.append("=");
-			requestBody.append(URLEncoder.encode(text, "UTF-8"));
+			requestBody.addParam("text", text);
 			
 		} catch (UnsupportedEncodingException e) {
 			throw new RuntimeException("Could not url encode form params.");
 		}
 
-		return sendRequest(requestBody.toString());
+		AnalyzedText response = sendRequest(
+				"", 
+				requestBody.build(),
+				ContentType.FORM,
+				"POST", 
+				AnalyzedText.class);
+		
+		response.createAnnotationLinks();
+
+		return response;
 	}
 	
 	/**
@@ -313,43 +125,28 @@ public class TextRazor {
 			throw new RuntimeException("You must specify at least 1 extractor.");	
 		}
 
-		StringBuffer requestBody = generatePOSTBody();
+		QueryBuilder requestBody = generatePOSTBody();
 
 		try {
-			requestBody.append("&");
-			requestBody.append(URLEncoder.encode("url", "UTF-8"));
-			requestBody.append("=");
-			requestBody.append(URLEncoder.encode(url, "UTF-8"));
+			requestBody.addParam("url", url);
 			
 		} catch (UnsupportedEncodingException e) {
 			throw new RuntimeException("Could not url encode form params.");
 		}
+		
+		AnalyzedText response = sendRequest(
+				"", 
+				requestBody.build(),
+				ContentType.FORM,
+				"POST", 
+				AnalyzedText.class);
+					
+		response.createAnnotationLinks();
 
-		return sendRequest(requestBody.toString());
+		return response;
 	}
 
 
-	/**
-	 * @return The API Key used to authenticate requests.
-	 */
-	public String getApiKey() {
-		return apiKey;
-	}
-
-	/**
-	 * @param apiKey The API Key used to authenticate requests
-	 */
-	public void setApiKey(String apiKey) {
-		this.apiKey = apiKey;
-	}
-
-	/**
-	 * @return The TextRazor Endpoint used for requests.
-	 */
-	public String getTextrazorEndpoint() {
-		return textrazorEndpoint;
-	}
-	
 	/**
 	 * @return The TextRazor preprocessing cleanup mode.
 	 */
@@ -434,13 +231,6 @@ public class TextRazor {
 	}
 	
 	/**
-	 * @param textrazorEndpoint The custom TextRazor Endpoint for requests made by this class.
-	 */
-	public void setTextrazorEndpoint(String textrazorEndpoint) {
-		this.textrazorEndpoint = textrazorEndpoint;
-	}
-
-	/**
 	 * @return List of "extractors" used to extract data from requests sent from this class.
 	 */
 	public List<String> getExtractors() {
@@ -488,36 +278,6 @@ public class TextRazor {
 		return rules;
 	}
 	
-	/**
-	 * @return true if compression is enabled on all TextRazor requests.
-	 */
-	public boolean isDoCompression() {
-		return doCompression;
-	}
-
-	/**
-	 * @param doCompression When true do compression on all TextRazor requests.
-	 */
-	public void setDoCompression(boolean doCompression) {
-		this.doCompression = doCompression;
-	}
-
-	/**
-	 * @return True if TextRazor requests are encrypted.
-	 */
-	public boolean isDoEncryption() {
-		return doEncryption;
-	}
-	
-	/**
-	 * Set to true to encrypt all TextRazor requests.
-	 * 
-	 * @param doEncryption
-	 */
-	public void setDoEncryption(boolean doEncryption) {
-		this.doEncryption = doEncryption;
-	}
-
 	/**
 	 * @return true if boilerplate HTML is filtered before processing by TextRazor.
 	 */
@@ -612,24 +372,18 @@ public class TextRazor {
 	/**
 	 * Sets the list of Freebase types to filter entity extraction. All returned entities must match at least one of these types. See the <a href="https://www.textrazor.com/types">Type Dictionary</a> for more details on supported types.
 	 * 
-	 * @param freebaseTypeFilters New List of Freebase types
+	 * @param freebaseTypeFilters List of Freebase types
 	 */
 	public void setFreebaseTypeFilters(List<String> freebaseTypeFilters) {
 		this.freebaseTypeFilters = freebaseTypeFilters;
 	}
-
+	
 	/**
-	 * @return The TextRazor Endpoint used for making encrypted requests in this class.
+	 * Sets a list of the custom entity dictionaries to match against your content. Each item should be a string ID corresponding to dictionaries you have previously configured through the Dictionary interface.
+	 * 
+	 * @param entityDictionaryIds List of dictionary IDs.
 	 */
-	public String getSecureTextrazorEndpoint() {
-		return secureTextrazorEndpoint;
+	public void setEntityDictionaries(List<String> entityDictionaryIds) {
+		this.entityDictionaries = entityDictionaryIds;
 	}
-
-	/**
-	 * @param secureTextrazorEndpoint The TextRazor Endpoint used for making encrypted requests.
-	 */
-	public void setSecureTextrazorEndpoint(String secureTextrazorEndpoint) {
-		this.secureTextrazorEndpoint = secureTextrazorEndpoint;
-	}
-
 }

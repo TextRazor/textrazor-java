@@ -15,6 +15,8 @@ public class Entity extends Annotation {
 	
 	private String freebaseId;
 	
+	private String customEntityId;
+	
 	private String wikiLink;
 	
 	private String matchedText;
@@ -65,6 +67,13 @@ public class Entity extends Annotation {
 		return freebaseId;
 	}
 
+	/**
+	 * @return The custom entity DictionaryEntry ID that matched this Entity, if this entity was matched in a custom dictionary.
+	 */
+	public String getCustomEntityId() {
+		return customEntityId;
+	}
+	
 	/**
 	 * @return the full canonical link to Wikipedia for this entity, or null if either this entity could not be disambiguated or a Wikipedia link doesn't exist.
 	 */
