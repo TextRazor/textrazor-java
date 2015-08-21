@@ -32,6 +32,6 @@ Usage
 
 You'll need a [free API key](https://www.textrazor.com) to add to your requests, see [an example](https://github.com/crayston/textrazor-java/blob/master/test/com/textrazor/TestTextRazor.java) to get going.
 
-Full JavaDoc can be found as part of the package, or viewed online [at the TextRazor site](https://www.textrazor.com/static/javadoc/index.html).
+Full JavaDoc can be found as part of the package, or you can browse more comprehensive documentation [at the TextRazor site](https://www.textrazor.com/docs/java).
 
 If you have any questions please get in touch at support@textrazor.com
