@@ -7,6 +7,7 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
+import java.net.Proxy;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.zip.GZIPInputStream;
@@ -33,6 +34,8 @@ public class TextRazorConnection {
 	
 	private boolean doCompression;
 	private boolean doEncryption;
+	
+	private Proxy proxy = null;
 	
 	public TextRazorConnection(String apiKey) {
 		if (apiKey == null) {
@@ -65,7 +68,13 @@ public class TextRazorConnection {
 				url = new URL(textrazorEndpoint + path);
 			}
 			
-			connection = (HttpURLConnection)url.openConnection();
+			if (null != proxy) {
+				connection = (HttpURLConnection)url.openConnection(proxy);
+			}
+			else {
+				connection = (HttpURLConnection)url.openConnection();
+			}
+			
 			connection.setRequestMethod(method);
 			connection.setDoOutput(true);
 			
@@ -90,7 +99,7 @@ public class TextRazorConnection {
 
 			if (null != requestBody) {
 				OutputStream os = connection.getOutputStream();
-				os.write( requestBody.getBytes() );
+				os.write( requestBody.getBytes("utf-8") );
 			}
 			
 			connection.connect();
@@ -253,5 +262,20 @@ public class TextRazorConnection {
 	 */
 	public void setSecureTextrazorEndpoint(String secureTextrazorEndpoint) {
 		this.secureTextrazorEndpoint = secureTextrazorEndpoint;
+	}
+	
+	/**
+	 * @param proxy The java.net.Proxy instance containing proxy settings for this connection.
+	 * Example: 
+	 * 
+	 * textrazor.setProxy(new Proxy(Proxy.Type.HTTP, new InetSocketAddress(PROXY_IP, PROXY_PORT));
+	 * 
+	 * When null, the default JVM proxy settings are used. If they are not set no proxy is used. These can be set with:
+	 * 
+	 * System.setProperty("https.proxyHost", textRazorProxyHost);
+	 * System.setProperty("https.proxyPort", textRazorProxyPort);
+	 */
+	public void setProxy(Proxy proxy) {
+		this.proxy = proxy;
 	}
 }
