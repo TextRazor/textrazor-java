@@ -23,7 +23,7 @@ Getting Started
 <dependency>
   <groupId>com.textrazor</groupId>
   <artifactId>textrazor</artifactId>
-  <version>1.0.7</version>
+  <version>1.0.9</version>
 </dependency> 
 ```
 
