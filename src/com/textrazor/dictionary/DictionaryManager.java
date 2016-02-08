@@ -75,7 +75,7 @@ public class DictionaryManager extends TextRazorConnection {
 				"GET",
 				GetDictionaryResponse.class);
 		
-		return response.getDictionary();
+		return response.getResponse();
 	}
 
 	public PagedAllEntries allEntries(String id, int limit, int offset) throws NetworkException, AnalysisException {	

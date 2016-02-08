@@ -8,6 +8,8 @@ public class Topic extends Annotation {
 	
 	private String wikiLink;
 	
+	private String wikidataId;
+	
 	private double score;
 
 	/**
@@ -29,6 +31,13 @@ public class Topic extends Annotation {
 	 */
 	public String getWikiLink() {
 		return wikiLink;
+	}
+	
+	/**
+	 * @return The disambiguated Wikidata QID for this topic, or None if either this topic could not be disambiguated, or a Wikidata link doesn’t exist.
+	 */
+	public String getWikidataId() {
+		return wikidataId;
 	}
 
 	/**

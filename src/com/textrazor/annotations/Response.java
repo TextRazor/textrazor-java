@@ -24,6 +24,8 @@ public class Response {
 	private List<Property> properties;
 
 	private List<Custom> customAnnotations;
+	
+	private List<ScoredCategory> categories;
 
 	private String customAnnotationOutput;
 
@@ -54,6 +56,13 @@ public class Response {
 	 */
 	public List<Topic> getTopics() {
 		return topics;
+	}
+	
+	/**
+	 * @return List of {@link ScoredCategory} objects that were extracted from your text.
+	 */
+	public List<ScoredCategory> getCategories() {
+		return categories;
 	}
 
 	/**

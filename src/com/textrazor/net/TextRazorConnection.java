@@ -24,7 +24,7 @@ import com.textrazor.NetworkException;
 public class TextRazorConnection {
 	
 	protected enum ContentType {
-		FORM, JSON
+		FORM, JSON, CSV
 	}
 	
 	private String apiKey;
@@ -46,7 +46,7 @@ public class TextRazorConnection {
 
 		this.textrazorEndpoint = "http://api.textrazor.com/";
 		this.secureTextrazorEndpoint = "https://api.textrazor.com/";
-
+		
 		this.doEncryption = true;
 		this.doCompression = true;
 	}
@@ -85,6 +85,9 @@ public class TextRazorConnection {
 			case FORM:
 				connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
 				break;
+			case CSV:
+				connection.setRequestProperty("Content-Type", "application/csv");
+				break;
 			}
 			
 			if (null != requestBody) {
@@ -96,7 +99,7 @@ public class TextRazorConnection {
 			if (doCompression) {
 				connection.setRequestProperty("Accept-Encoding", "gzip, deflate");
 			}
-
+			
 			if (null != requestBody) {
 				OutputStream os = connection.getOutputStream();
 				os.write( requestBody.getBytes("utf-8") );

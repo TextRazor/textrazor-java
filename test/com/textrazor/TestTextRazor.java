@@ -1,5 +1,6 @@
 package com.textrazor;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -8,9 +9,13 @@ import java.util.Map;
 import com.textrazor.annotations.Custom;
 import com.textrazor.annotations.Entity;
 import com.textrazor.annotations.AnalyzedText;
+import com.textrazor.annotations.ScoredCategory;
 import com.textrazor.annotations.Sentence;
+import com.textrazor.annotations.Topic;
 import com.textrazor.annotations.Word;
 import com.textrazor.annotations.Word.Sense;
+import com.textrazor.classifier.ClassifierManager;
+import com.textrazor.classifier.model.Category;
 import com.textrazor.dictionary.DictionaryManager;
 import com.textrazor.dictionary.model.Dictionary;
 import com.textrazor.dictionary.model.DictionaryEntry;
@@ -18,6 +23,62 @@ import com.textrazor.dictionary.model.PagedAllEntries;
 
 public class TestTextRazor {
 
+	public static void testClassifier(String apiKey) throws NetworkException, AnalysisException {
+		ClassifierManager manager = new ClassifierManager(apiKey);
+		
+		String testClassifierId = "java_test_classifier";
+		
+		try {
+			for (Category cat : manager.allCategories(testClassifierId).getCategories()) {
+				System.out.println("Current category: " + cat.getCategoryId());
+			}
+		
+			manager.deleteClassifier(testClassifierId);
+		}
+		catch (AnalysisException ex) {}
+		
+		System.out.println("Creating classifier..");
+		
+		try {
+			manager.createClassifier(testClassifierId, 
+					Arrays.asList(Category.builder()
+							.setCategoryId("ID1")
+							.setQuery("or(concept('sport>soccer'),concept('sport>association football'))")
+							.build(),
+							Category.builder()
+							.setCategoryId("ID2")
+							.setQuery("or(concept('sport>super bowl'),concept('sport>NFL'),concept('sport>american football'))")
+							.build()));
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		System.out.println("Finished Creating classifier");
+		
+		System.out.println(manager.getCategory(testClassifierId, "ID1").getCategoryId());
+		
+		{
+			for (Category cat : manager.allCategories(testClassifierId).getCategories()) {
+				System.out.println("Final Classifier: " + cat.getCategoryId() + " " + cat.getQuery());
+			}
+		}
+	
+		TextRazor client = new TextRazor(apiKey);
+		
+		String url = "http://us.cnn.com/2016/02/01/us/carolina-panthers-haters/index.html";
+		
+		client.setCleanupMode("cleanHTML");
+		client.setClassifiers(Arrays.asList(testClassifierId));
+		
+		AnalyzedText response = client.analyzeUrl(url);
+		
+		for (ScoredCategory category : response.getResponse().getCategories()) {
+			System.out.println("Category:" + category.getCategoryId() + " " + category.getLabel() + " " + category.getScore());
+		}
+	}
+	
+	
 	public static void testDictionary(String apiKey) throws NetworkException, AnalysisException {
 		DictionaryManager dictionaryManager = new DictionaryManager(apiKey);
 	
@@ -34,8 +95,13 @@ public class TestTextRazor {
 		Dictionary newDict = Dictionary.builder().setId("developers").build();
 
 		dictionaryManager.createDictionary(newDict);
+		
+		Dictionary teamsDictionary = dictionaryManager.getDictionary("developers");
+		 
+		System.out.println("Got dict:");
+		 System.out.println(teamsDictionary.getId());
 
-		{
+		 {
 			List<DictionaryEntry> newEntries = new ArrayList<DictionaryEntry>();
 
 			List<String> types = Arrays.asList("cpp_developer", "writer");
@@ -87,11 +153,16 @@ public class TestTextRazor {
 		
 		client.addExtractor("words");
 		client.addExtractor("entities");
-		client.addExtractor("entailments");
-		client.addExtractor("senses");
-		client.addExtractor("phrases");
-		client.addExtractor("dependency-trees");
-		client.addExtractor("relations");
+		client.addExtractor("topics");
+		 
+		client.setClassifiers(Arrays.asList("textrazor_newscodes"));
+		
+		//client.addExtractor("entailments");
+		//client.addExtractor("senses");
+		//client.addExtractor("phrases");
+		//client.addExtractor("dependency-trees");
+		//client.addExtractor("relations");
+		
 		client.addExtractor("entity_companies");
 		
 		client.setEnrichmentQueries(Arrays.asList("fbase:/location/location/geolocation>/location/geocode/latitude", "fbase:/location/location/geolocation>/location/geocode/longitude"));
@@ -100,8 +171,16 @@ public class TestTextRazor {
 		client.setRules(rules);
 
 		AnalyzedText response = client.analyze("LONDON - Barclays misled shareholders and the public RBS about one of the biggest investments in the bank's history, a BBC Panorama investigation has found.");
-
+		
 		System.out.println(response.isOk());
+		
+		for (ScoredCategory category : response.getResponse().getCategories()) {
+			System.out.println("Category:" + category.getCategoryId() + " " + category.getLabel() + " " + category.getScore());
+		}
+		
+		for (Topic topic : response.getResponse().getTopics()) {
+			System.out.println(topic.getId() + " " + topic.getWikidataId());
+		}
 		
 		for (Sentence sentence : response.getResponse().getSentences()) {
 			for (Word word : sentence.getWords()) {
@@ -112,7 +191,6 @@ public class TestTextRazor {
 				for (Word child : word.getChildren()) {
 					System.out.println("Child: " + child.getToken());
 				}
-
 
 				for (Entity entity : word.getEntities()) {
 					System.out.println("Matched Entity: " + entity.getEntityEnglishId());
@@ -159,7 +237,9 @@ public class TestTextRazor {
 	public static void main(String[] args) throws NetworkException, AnalysisException {
 		String API_KEY = "YOUR_API_KEY_HERE";
 
+		testClassifier(API_KEY);
 		testDictionary(API_KEY);
+		
 		testAnalysis(API_KEY);
 	}
 

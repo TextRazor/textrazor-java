@@ -9,6 +9,8 @@ public class Entity extends Annotation {
 	
 	private int id;
 	
+	private String sourceId;
+	
 	private String entityId;
 
 	private String entityEnglishId;
@@ -18,6 +20,8 @@ public class Entity extends Annotation {
 	private String customEntityId;
 	
 	private String wikiLink;
+	
+	private String wikidataId;
 	
 	private String matchedText;
 	
@@ -68,6 +72,13 @@ public class Entity extends Annotation {
 	}
 
 	/**
+	 * @return The custom Dictionary ID that this entity was matched from, or null if it was a TextRazor entity.
+	 */
+	public String getSourceId() {
+		return sourceId;
+	}
+	
+	/**
 	 * @return The custom entity DictionaryEntry ID that matched this Entity, if this entity was matched in a custom dictionary.
 	 */
 	public String getCustomEntityId() {
@@ -79,6 +90,13 @@ public class Entity extends Annotation {
 	 */
 	public String getWikiLink() {
 		return wikiLink;
+	}
+	
+	/**
+	 * @return the disambiguated Wikidata QID for this entity, or null if either this entity could not be disambiguated or a Wikidata link doesn't exist.
+	 */
+	public String getWikidataId() {
+		return wikidataId;
 	}
 
 	/**

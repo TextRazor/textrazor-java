@@ -31,7 +31,9 @@ public class TextRazor extends TextRazorConnection {
 
 	private String rules;
 
-	private List<String> entityDictionaries;
+	private List<String> entityDictionaries = new ArrayList<String>();
+	
+	private List<String> classifiers = new ArrayList<String>();
 	
 	/**
 	 * Creates a new TextRazor client with the specified API Key.
@@ -59,6 +61,7 @@ public class TextRazor extends TextRazorConnection {
 						.addParam("entities.allowOverlap", allowOverlap)
 						.addParam("entities.enrichmentQueries", enrichmentQueries)
 						.addParam("entities.languageOverride", languageOverride)
+						.addParam("classifiers", classifiers)
 						.addParam("rules", rules);
 			
 		}
@@ -81,10 +84,6 @@ public class TextRazor extends TextRazorConnection {
 	public AnalyzedText analyze(String text) throws NetworkException, AnalysisException {
 		if (null == text) {
 			throw new RuntimeException("text param cannot be null.");
-		}
-
-		if (null == extractors || 0 == extractors.size()) {
-			throw new RuntimeException("You must specify at least 1 extractor.");	
 		}
 
 		QueryBuilder requestBody = generatePOSTBody();
@@ -120,11 +119,7 @@ public class TextRazor extends TextRazorConnection {
 		if (null == url) {
 			throw new RuntimeException("url param cannot be null.");
 		}
-
-		if (null == extractors || 0 == extractors.size()) {
-			throw new RuntimeException("You must specify at least 1 extractor.");	
-		}
-
+		
 		QueryBuilder requestBody = generatePOSTBody();
 
 		try {
@@ -385,5 +380,34 @@ public class TextRazor extends TextRazorConnection {
 	 */
 	public void setEntityDictionaries(List<String> entityDictionaryIds) {
 		this.entityDictionaries = entityDictionaryIds;
+	}
+	
+	/**
+	 * Gets a list of the custom entity dictionaries to match against your content. Each item should be a string ID corresponding to dictionaries you have previously configured through the Dictionary interface.
+	 * 
+	 * return List of dictionary IDs.
+	 */
+	public List<String> getEntityDictionaries() {
+		return this.entityDictionaries;
+	}
+	
+	/**
+	 * Sets a list of classifiers to evaluate against your document. Each entry should be a string ID corresponding to either one of TextRazor's default classifiers, or one you have previously configured through the ClassifierManager interface.
+	 *
+	 * Valid options: textrazor_iab, textrazor_newscodes, custom classifier name
+	 *
+	 * @param classifierIds List of classifier IDs.
+	 */
+	public void setClassifiers(List<String> classifierIds) {
+		this.classifiers = classifierIds;
+	}
+	
+	/**
+	 * Gets a list of classifiers to evaluate against your document. Each entry should be a string ID corresponding to either one of TextRazor's default classifiers, or one you have previously configured through the ClassifierManager interface.
+	 *
+	 * return List of classifier IDs.
+	 */
+	public List<String> getClassifiers() {
+		return this.classifiers;
 	}
 }
