@@ -19,7 +19,28 @@ public class Word extends Annotation {
 		}
 		
 		/**
-		 * @return Score between 0 to 1 corresponding to the likelyhood this sense applies to this word.
+		 * @return Score between 0 to 1 corresponding to the likelihood this sense applies to this word.
+		 */
+		public float getScore() {
+			return score;
+		}
+	}
+	
+	public static class Suggestion {
+		
+		private String suggestion;
+		
+		private float score;
+		
+		/**
+		 * @return The spelling suggestion.
+		 */
+		public String getSuggestion() {
+			return suggestion;
+		}
+		
+		/**
+		 * @return Score between 0 to 1 representing the confidence that TextRazor has that this suggestion is correct.
 		 */
 		public float getScore() {
 			return score;
@@ -52,6 +73,8 @@ public class Word extends Annotation {
 	
 	private List<Sense> senses = new ArrayList<Sense>();
 	
+	private List<Suggestion> spellingSuggestions = new ArrayList<Suggestion>();
+
 	// Links to other annotations that this word is a part of.
 	
 	private List<Entailment> entailments = new ArrayList<Entailment>();
@@ -161,6 +184,13 @@ public class Word extends Annotation {
 	 */
 	public List<Sense> getSenses() {
 		return senses;
+	}
+	
+	/**
+	 * @return List of {@link Suggestion} objects of this word.
+	 */
+	public List<Suggestion> getSpellingSuggestions() {
+		return spellingSuggestions;
 	}
 	
 	/**

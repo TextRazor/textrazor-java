@@ -6,6 +6,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import com.textrazor.account.AccountManager;
+import com.textrazor.account.model.Account;
 import com.textrazor.annotations.Custom;
 import com.textrazor.annotations.Entity;
 import com.textrazor.annotations.AnalyzedText;
@@ -14,6 +16,7 @@ import com.textrazor.annotations.Sentence;
 import com.textrazor.annotations.Topic;
 import com.textrazor.annotations.Word;
 import com.textrazor.annotations.Word.Sense;
+import com.textrazor.annotations.Word.Suggestion;
 import com.textrazor.classifier.ClassifierManager;
 import com.textrazor.classifier.model.Category;
 import com.textrazor.dictionary.DictionaryManager;
@@ -23,6 +26,14 @@ import com.textrazor.dictionary.model.PagedAllEntries;
 
 public class TestTextRazor {
 
+	public static void testAccount(String apiKey) throws NetworkException, AnalysisException {
+		AccountManager manager = new AccountManager(apiKey);
+		
+		Account account = manager.getAccount();
+		
+		System.out.println("Your current account plan is " + account.getPlan() + ", which includes " + account.getPlanDailyRequestsIncluded() + " daily requests, " + account.getRequestsUsedToday() + " used today");
+	}
+	
 	public static void testClassifier(String apiKey) throws NetworkException, AnalysisException {
 		ClassifierManager manager = new ClassifierManager(apiKey);
 		
@@ -154,11 +165,12 @@ public class TestTextRazor {
 		client.addExtractor("words");
 		client.addExtractor("entities");
 		client.addExtractor("topics");
+		client.addExtractor("spelling");
 		 
 		client.setClassifiers(Arrays.asList("textrazor_newscodes"));
 		
 		//client.addExtractor("entailments");
-		//client.addExtractor("senses");
+		client.addExtractor("senses");
 		//client.addExtractor("phrases");
 		//client.addExtractor("dependency-trees");
 		//client.addExtractor("relations");
@@ -170,7 +182,7 @@ public class TestTextRazor {
 		String rules = "entity_companies(CompanyEntity) :- entity_type(CompanyEntity, 'Company').";
 		client.setRules(rules);
 
-		AnalyzedText response = client.analyze("LONDON - Barclays misled shareholders and the public RBS about one of the biggest investments in the bank's history, a BBC Panorama investigation has found.");
+		AnalyzedText response = client.analyze("LONDON - Barclays misled shareholders and the public RBS about one of the biggest investments in the bank's history, a BBC Panrama investigation has found.");
 		
 		System.out.println(response.isOk());
 		
@@ -211,6 +223,10 @@ public class TestTextRazor {
 				for (Sense sense: word.getSenses()) {
 					System.out.println("Word sense: " + sense.getSynset() + " has score: " + sense.getScore());
 				}
+				
+				for (Suggestion suggestion : word.getSpellingSuggestions()) {
+					System.out.println("Word suggestion: " + suggestion.getSuggestion() + " has score: " + suggestion.getScore());
+				}
 			}
 		}
 
@@ -227,6 +243,8 @@ public class TestTextRazor {
 				}
 			}
 		}
+		
+		
 		 
 	}
 	
@@ -237,9 +255,9 @@ public class TestTextRazor {
 	public static void main(String[] args) throws NetworkException, AnalysisException {
 		String API_KEY = "YOUR_API_KEY_HERE";
 
+		testAccount(API_KEY);
 		testClassifier(API_KEY);
 		testDictionary(API_KEY);
-		
 		testAnalysis(API_KEY);
 	}
 
