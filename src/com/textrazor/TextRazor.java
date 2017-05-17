@@ -60,7 +60,7 @@ public class TextRazor extends TextRazorConnection {
 						.addParam("entities.dictionaries", entityDictionaries)
 						.addParam("entities.allowOverlap", allowOverlap)
 						.addParam("entities.enrichmentQueries", enrichmentQueries)
-						.addParam("entities.languageOverride", languageOverride)
+						.addParam("languageOverride", languageOverride)
 						.addParam("classifiers", classifiers)
 						.addParam("rules", rules);
 			
