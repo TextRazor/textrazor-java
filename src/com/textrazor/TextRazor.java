@@ -34,6 +34,7 @@ public class TextRazor extends TextRazorConnection {
 	private List<String> entityDictionaries = new ArrayList<String>();
 	
 	private List<String> classifiers = new ArrayList<String>();
+	private Integer maxCategories;
 	
 	/**
 	 * Creates a new TextRazor client with the specified API Key.
@@ -62,6 +63,7 @@ public class TextRazor extends TextRazorConnection {
 						.addParam("entities.enrichmentQueries", enrichmentQueries)
 						.addParam("languageOverride", languageOverride)
 						.addParam("classifiers", classifiers)
+						.addParam("classifier.maxCategories", maxCategories)
 						.addParam("rules", rules);
 			
 		}
@@ -409,5 +411,23 @@ public class TextRazor extends TextRazorConnection {
 	 */
 	public List<String> getClassifiers() {
 		return this.classifiers;
+	}
+	
+	/**
+	 * Sets the maximum number of matching categories that TextRazor will return from classifiers requested in the "classifiers" request property. Default '10'.
+	 * 
+	 * @param maxCategories Number of categories
+	 */
+	public void setMaxCategories(Integer maxCategories) {
+		this.maxCategories = maxCategories;
+	}
+	
+	/**
+	 * Gets the maximum number of matching categories that TextRazor will return from classifiers requested in the "classifiers" request property.
+	 * 
+	 * @param maxCategories Number of categories
+	 */
+	public Integer getMaxCategories() {
+		return this.maxCategories;
 	}
 }

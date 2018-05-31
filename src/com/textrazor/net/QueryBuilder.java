@@ -43,6 +43,14 @@ public class QueryBuilder {
 		return this;
 	}
 	
+	public QueryBuilder addParam(String name, Integer value) throws UnsupportedEncodingException {
+		if (null != value) {
+			return addParam(name, value.toString());
+		}
+		
+		return this;
+	}
+	
 	public String build() {
 		return path.toString();
 	}
