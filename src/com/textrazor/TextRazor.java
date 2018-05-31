@@ -424,8 +424,6 @@ public class TextRazor extends TextRazorConnection {
 	
 	/**
 	 * Gets the maximum number of matching categories that TextRazor will return from classifiers requested in the "classifiers" request property.
-	 * 
-	 * @param maxCategories Number of categories
 	 */
 	public Integer getMaxCategories() {
 		return this.maxCategories;
