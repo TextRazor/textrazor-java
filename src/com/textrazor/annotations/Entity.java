@@ -41,6 +41,14 @@ public class Entity extends Annotation {
 	
 	private double confidenceScore;
 	
+	private String crunchbaseId;
+
+	private String figi;
+
+	private String permid;
+
+	private String lei;
+	
 	private Map<String, List<String>> data = new HashMap<String, List<String>>();
 
 	/**
@@ -168,6 +176,34 @@ public class Entity extends Annotation {
 	 */
 	public String getEntityEnglishId() {
 		return entityEnglishId;
+	}
+	
+	/**
+	 * @return The disambiguated Crunchbase ID for this entity. Null if either the entity could not be linked, or the entity was not a Company type.
+	 */
+	public String getCrunchbaseId() {
+		return crunchbaseId;
+	}
+
+	/**
+	 * @return The disambiguated Open FIGI for this entity. Null if either the entity could not be linked, or the entity was not a Company type.
+	 */
+	public String getFIGI() {
+		return figi;
+	}
+	
+	/**
+	 * @return The disambiguated Thomson Reuters Open PermID for this entity. Null if either the entity could not be linked, or the entity was not a Company type.
+	 */
+	public String getPermId() {
+		return permid;
+	}
+	
+	/**
+	 * @return The disambiguated Legal Entity Identifier for this entity. Null if either the entity could not be linked, or the entity was not a Company type.
+	 */
+	public String getLEI() {
+		return lei;
 	}
 	
 	/**
