@@ -9,15 +9,21 @@ import com.textrazor.annotations.AnalyzedText;
 import com.textrazor.net.QueryBuilder;
 import com.textrazor.net.TextRazorConnection;
 
+import com.textrazor.NetworkException;
+
 public class TextRazor extends TextRazorConnection {
 	private List<String> extractors = new ArrayList<String>();
 
-	private boolean cleanupHTML = false;
+	private Boolean cleanupHTML;
 	private String cleanupMode;
-	private boolean cleanupReturnRaw = false;
-	private boolean cleanupReturnCleaned = false;
-	private boolean cleanupUseMetadata = true;
+	private Boolean cleanupReturnRaw;
+	private Boolean cleanupReturnCleaned;
+	private Boolean cleanupUseMetadata;
 	
+	private Boolean downloadRunJavascript;
+	private Integer cleanupCleanHTMLPrecision;
+	private Boolean cleanupCleanHTMLUseTitle;
+
 	private String downloadUserAgent;
 	
 	private String languageOverride;
@@ -27,8 +33,6 @@ public class TextRazor extends TextRazorConnection {
 	private List<String> dbpediaTypeFilters = new ArrayList<String>();
 	private List<String> freebaseTypeFilters = new ArrayList<String>();
 	
-	private List<String> enrichmentQueries = new ArrayList<String>();
-
 	private String rules;
 
 	private List<String> entityDictionaries = new ArrayList<String>();
@@ -49,18 +53,20 @@ public class TextRazor extends TextRazorConnection {
 		QueryBuilder queryBuilder = new QueryBuilder();
 		
 		try {
-			queryBuilder.addParam("cleanupHTML", cleanupHTML ? "true" : "false")
+			queryBuilder.addParam("cleanupHTML", cleanupHTML)
 						.addParam("cleanup.mode", cleanupMode)
 						.addParam("cleanup.returnRaw", cleanupReturnRaw)
 						.addParam("cleanup.returnCleaned", cleanupReturnCleaned)
 						.addParam("cleanup.useMetadata", cleanupUseMetadata)
+						.addParam("cleanup.cleanHTML.precision", cleanupCleanHTMLPrecision)
+						.addParam("cleanup.cleanHTML.useTitle", cleanupCleanHTMLUseTitle)
+						.addParam("download.runJavascript", downloadRunJavascript)
 						.addParam("download.userAgent", downloadUserAgent)
 						.addParam("extractors", extractors)
 						.addParam("entities.filterDbpediaTypes", dbpediaTypeFilters)
 						.addParam("entities.filterFreebaseTypes", freebaseTypeFilters)
 						.addParam("entities.dictionaries", entityDictionaries)
 						.addParam("entities.allowOverlap", allowOverlap)
-						.addParam("entities.enrichmentQueries", enrichmentQueries)
 						.addParam("languageOverride", languageOverride)
 						.addParam("classifiers", classifiers)
 						.addParam("classifier.maxCategories", maxCategories)
@@ -130,7 +136,7 @@ public class TextRazor extends TextRazorConnection {
 		} catch (UnsupportedEncodingException e) {
 			throw new RuntimeException("Could not url encode form params.");
 		}
-		
+
 		AnalyzedText response = sendRequest(
 				"", 
 				requestBody.build(),
@@ -168,7 +174,7 @@ public class TextRazor extends TextRazorConnection {
 	/**
 	 * @return true the TextRazor response will contain the raw_text property, the text it analyzed after preprocessing.
 	 */
-	public boolean getCleanupReturnRaw() {
+	public Boolean getCleanupReturnRaw() {
 		return cleanupReturnRaw;
 	}
 	
@@ -176,14 +182,14 @@ public class TextRazor extends TextRazorConnection {
 	 * @param cleanupReturnRaw When true, the TextRazor response will contain the raw_text property, the original text TextRazor received or downloaded before cleaning.
 	 *   	  To save bandwidth, only set this to true if you need it in your application. Defaults to false.
 	 */
-	public void setCleanupReturnRaw(boolean cleanupReturnRaw) {
+	public void setCleanupReturnRaw(Boolean cleanupReturnRaw) {
 		this.cleanupReturnRaw = cleanupReturnRaw;
 	}
 	
 	/**
 	 * @return true the TextRazor response will contain the cleaned_text property, the text it analyzed after preprocessing.
 	 */
-	public boolean getCleanupReturnCleaned() {
+	public Boolean getCleanupReturnCleaned() {
 		return cleanupReturnCleaned;
 	}
 	
@@ -191,14 +197,14 @@ public class TextRazor extends TextRazorConnection {
 	 * @param cleanupReturnCleaned When true, the TextRazor response will contain the cleaned_text property, the text it analyzed after preprocessing.
 	 * 		  To save bandwidth, only set this to true if you need it in your application. Defaults to false.
 	 */
-	public void setCleanupReturnCleaned(boolean cleanupReturnCleaned) {
+	public void setCleanupReturnCleaned(Boolean cleanupReturnCleaned) {
 		this.cleanupReturnCleaned = cleanupReturnCleaned;
 	}
 	
 	/**
 	 * @return true TextRazor will use metadata extracted from your document to help in the disambiguation/extraction process.
 	 */
-	public boolean getCleanupUseMetadata() {
+	public Boolean getCleanupUseMetadata() {
 		return cleanupUseMetadata;
 	}
 	
@@ -207,10 +213,52 @@ public class TextRazor extends TextRazorConnection {
 	 * 		  This include HTML titles and metadata, and can significantly improve results for shorter documents without much other content.
      *		  This option has no effect when cleanup_mode is 'raw'. Defaults to True.
 	 */
-	public void setCleanupUseMetadata(boolean cleanupUseMetadata) {
+	public void setCleanupUseMetadata(Boolean cleanupUseMetadata) {
 		this.cleanupUseMetadata = cleanupUseMetadata;
 	}
 	
+	/**
+	 * @return true if TextRazor is allowed to run JavaScript while downloading content.
+	 */
+	public Boolean getDownloadRunJavascript() {
+		return downloadRunJavascript;
+	}
+
+	/**
+	 * @param downloadRunJavascript When true allow TextRazor to run JavaScript while downloading content. This can more reliably extract content from js heavy sites, but is a lot slower.
+	 */
+	public void setDownloadRunJavascript(Boolean downloadRunJavascript) {
+		this.downloadRunJavascript = downloadRunJavascript;
+	}
+
+	/**
+	 * @return The cleanup HTML precision level.
+	 */
+	public Integer getCleanupCleanHTMLPrecision() {
+		return cleanupCleanHTMLPrecision;
+	}
+
+	/**
+	 * @param cleanupCleanHTMLPrecision Sets the cleanup HTML precision level to a level 1-3. Higher precision levels mean boilerplate is more aggressively removed from pages with "cleanHTML" option. 2 is a good compromise for most use-cases.
+	 */
+	public void setCleanupCleanHTMLPrecision(Integer cleanupCleanHTMLPrecision) {
+		this.cleanupCleanHTMLPrecision = cleanupCleanHTMLPrecision;
+	}
+
+	/**
+	 * @return true if TextRazor uses the title during HTML cleanup.
+	 */
+	public Boolean getCleanupCleanHTMLUseTitle() {
+		return cleanupCleanHTMLUseTitle;
+	}
+
+	/**
+	 * @param cleanupCleanHTMLUseTitle to true to allow TextRazor to use the title during HTML cleanup.
+	 */
+	public void setCleanupCleanHTMLUseTitle(Boolean cleanupCleanHTMLUseTitle) {
+		this.cleanupCleanHTMLUseTitle = cleanupCleanHTMLUseTitle;
+	}
+
 	/**
 	 * @return The User-Agent header to be used when downloading over HTTP.
 	 */
@@ -278,14 +326,14 @@ public class TextRazor extends TextRazorConnection {
 	/**
 	 * @return true if boilerplate HTML is filtered before processing by TextRazor.
 	 */
-	public boolean isCleanupHTML() {
+	public Boolean isCleanupHTML() {
 		return cleanupHTML;
 	}
 
 	/**
 	 * @param cleanupHTML to true to clean boilerplate HTML before processing by TextRazor.
 	 */
-	public void setCleanupHTML(boolean cleanupHTML) {
+	public void setCleanupHTML(Boolean cleanupHTML) {
 		this.cleanupHTML = cleanupHTML;
 	}
 
@@ -321,22 +369,6 @@ public class TextRazor extends TextRazorConnection {
 	 */
 	public void setLanguageOverride(String languageOverride) {
 		this.languageOverride = languageOverride;
-	}
-
-	/**
-	 * Get a list of "Enrichment Queries", used to enrich the entity response with structured linked data.
-     * The syntax for these queries is documented at https://www.textrazor.com/enrichment. 
-	 */
-	public List<String> getEnrichmentQueries() {
-		return enrichmentQueries;
-	}
-	
-	/**
-	 * Set a list of "Enrichment Queries", used to enrich the entity response with structured linked data.
-     * The syntax for these queries is documented at https://www.textrazor.com/enrichment. 
-	 */
-	public void setEnrichmentQueries(List<String> enrichmentQueries) {
-		this.enrichmentQueries = enrichmentQueries;
 	}
 	
 	/**

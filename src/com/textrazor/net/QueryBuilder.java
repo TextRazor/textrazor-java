@@ -29,8 +29,12 @@ public class QueryBuilder {
 		return this;
 	}
 	
-	public QueryBuilder addParam(String name, boolean value) throws UnsupportedEncodingException {
-		return addParam(name, value ? "true" : "false");
+	public QueryBuilder addParam(String name, Boolean value) throws UnsupportedEncodingException {
+		if (null != value) {
+			return addParam(name, value ? "true" : "false");
+		}
+
+		return this;
 	}
 	
 	public QueryBuilder addParam(String name, List<String> values) throws UnsupportedEncodingException {

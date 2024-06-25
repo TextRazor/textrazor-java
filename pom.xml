@@ -71,8 +71,8 @@
 				<configuration>
 					<compilerArgument>-Xlint</compilerArgument>
 					<compilerArgument>-g:lines,source</compilerArgument>
-					<source>1.5</source>
-					<target>1.5</target>
+					<source>1.7</source>
+					<target>1.7</target>
 				</configuration>
 			</plugin>
 			<plugin>

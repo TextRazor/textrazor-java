@@ -14,6 +14,8 @@ public class AnalyzedText extends TextRazorResponse {
 	}
 	
 	public void createAnnotationLinks() {
-		response.createAnnotationLinks();
+		if (null != response) {
+			response.createAnnotationLinks();
+		}
 	}
 }
