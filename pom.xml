@@ -18,10 +18,10 @@
 
 	<scm>
 		<url>https://github.com/TextRazor/textrazor-java</url>
-		<connection>scm:git:git@github.com:TextRazor/textrazor-java.git</connection>
-		<developerConnection>scm:git:git@github.com:TextRazor/textrazor-java.git</developerConnection>
+		<connection>scm:git:https://github.com:TextRazor/textrazor-java.git</connection>
+		<developerConnection>scm:git:https://github.com:TextRazor/textrazor-java.git</developerConnection>
 	</scm>
-
+	
 	<developers>
 		<developer>
 			<id>crayston</id>
