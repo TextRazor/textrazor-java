@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.textrazor</groupId>
 	<artifactId>textrazor</artifactId>
-	<version>1.0.13-SNAPSHOT</version>
+	<version>1.0.13</version>
 	<packaging>jar</packaging>
 
 	<name>textrazor</name>
@@ -18,8 +18,8 @@
 
 	<scm>
 		<url>https://github.com/TextRazor/textrazor-java</url>
-		<connection>scm:git:git@github.com:TextRazor/textrazor-java.git</connection>
-		<developerConnection>scm:git:git@github.com:TextRazor/textrazor-java.git</developerConnection>
+		<connection>scm:git:https://github.com:TextRazor/textrazor-java.git</connection>
+		<developerConnection>scm:git:https://github.com:TextRazor/textrazor-java.git</developerConnection>
 	</scm>
 
 	<developers>
@@ -63,7 +63,6 @@
 		<sourceDirectory>src/</sourceDirectory>
 		
 		<plugins>
-			<!-- Require Java 1.5+ -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -71,8 +70,8 @@
 				<configuration>
 					<compilerArgument>-Xlint</compilerArgument>
 					<compilerArgument>-g:lines,source</compilerArgument>
-					<source>1.7</source>
-					<target>1.7</target>
+					<source>1.8</source>
+					<target>1.8</target>
 				</configuration>
 			</plugin>
 			<plugin>
