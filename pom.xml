@@ -68,7 +68,21 @@
 	<!-- Build settings and plugins -->
 	<build>
 		<sourceDirectory>src/</sourceDirectory>
-		
+		<pluginManagement>
+      <plugins>
+        
+        <plugin>
+          <artifactId>maven-release-plugin</artifactId>
+          <version>3.1.0</version>
+          <configuration>
+            <mavenExecutorId>forked-path</mavenExecutorId>
+            <useReleaseProfile>false</useReleaseProfile>
+            <arguments>-Psonatype-oss-release</arguments>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
