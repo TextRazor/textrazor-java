@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.textrazor</groupId>
 	<artifactId>textrazor</artifactId>
-	<version>1.0.14-SNAPSHOT</version>
+	<version>1.0.14</version>
 	<packaging>jar</packaging>
 
 	<name>textrazor</name>
@@ -20,7 +20,7 @@
 		<url>https://github.com/TextRazor/textrazor-java</url>
 		<connection>scm:git:https://github.com/TextRazor/textrazor-java.git</connection>
 		<developerConnection>scm:git:https://github.com/TextRazor/textrazor-java.git</developerConnection>
-	  <tag>HEAD</tag>
+	  <tag>textrazor-1.0.14</tag>
   </scm>
 
 	<developers>
