@@ -195,7 +195,7 @@ public class Entity extends Annotation {
 	/**
 	 * @return The disambiguated Thomson Reuters Open PermID for this entity. Null if either the entity could not be linked, or the entity was not a Company type.
 	 */
-	public String getPermId() {
+	public String getPermid() {
 		return permid;
 	}
 	
