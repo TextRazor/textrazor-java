@@ -36,13 +36,13 @@
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-core</artifactId>
-			<version>2.9.8</version>
+			<version>2.12.7</version>
 		</dependency>
 
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-annotations</artifactId>
-			<version>2.9.8</version>
+			<version>2.12.7</version>
 		</dependency>
 
 		<dependency>
@@ -71,16 +71,16 @@
 		<sourceDirectory>src/</sourceDirectory>
 		<pluginManagement>
       <plugins>
-        
         <plugin>
-          <artifactId>maven-release-plugin</artifactId>
-          <version>3.1.0</version>
+          <groupId>org.sonatype.central</groupId>
+          <artifactId>central-publishing-maven-plugin</artifactId>
+          <version>0.12.0</version>
+          <extensions>true</extensions>
           <configuration>
-            <mavenExecutorId>forked-path</mavenExecutorId>
-            <useReleaseProfile>false</useReleaseProfile>
-            <arguments>-Psonatype-oss-release</arguments>
+            <publishingServerId>central</publishingServerId>
+            <autoPublish>false</autoPublish>
           </configuration>
-        </plugin>
+        </plugin> 
       </plugins>
     </pluginManagement>
 

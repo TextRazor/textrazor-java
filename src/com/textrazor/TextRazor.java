@@ -21,6 +21,7 @@ public class TextRazor extends TextRazorConnection {
 	private Boolean cleanupUseMetadata;
 	
 	private Boolean downloadRunJavascript;
+	private Boolean downloadUseStaticIPs;
 	private Integer cleanupCleanHTMLPrecision;
 	private Boolean cleanupCleanHTMLUseTitle;
 
@@ -29,6 +30,7 @@ public class TextRazor extends TextRazorConnection {
 	private String languageOverride;
 
 	private boolean allowOverlap = true;
+	private Boolean includeAddressPlaces;
 	
 	private List<String> dbpediaTypeFilters = new ArrayList<String>();
 	private List<String> freebaseTypeFilters = new ArrayList<String>();
@@ -61,12 +63,14 @@ public class TextRazor extends TextRazorConnection {
 						.addParam("cleanup.cleanHTML.precision", cleanupCleanHTMLPrecision)
 						.addParam("cleanup.cleanHTML.useTitle", cleanupCleanHTMLUseTitle)
 						.addParam("download.runJavascript", downloadRunJavascript)
+						.addParam("download.useStaticIPs", downloadUseStaticIPs)
 						.addParam("download.userAgent", downloadUserAgent)
 						.addParam("extractors", extractors)
 						.addParam("entities.filterDbpediaTypes", dbpediaTypeFilters)
 						.addParam("entities.filterFreebaseTypes", freebaseTypeFilters)
 						.addParam("entities.dictionaries", entityDictionaries)
 						.addParam("entities.allowOverlap", allowOverlap)
+						.addParam("entities.includeAddressPlaces", includeAddressPlaces)
 						.addParam("languageOverride", languageOverride)
 						.addParam("classifiers", classifiers)
 						.addParam("classifier.maxCategories", maxCategories)
@@ -232,6 +236,21 @@ public class TextRazor extends TextRazorConnection {
 	}
 
 	/**
+	 * @return Whether downloads should use TextRazor's set of static IPs.
+	 */
+	public Boolean getDownloadUseStaticIPs() {
+		return downloadUseStaticIPs;
+	}
+
+	/**
+	 * @param downloadUseStaticIPs true to download URLs using TextRazor's set of static IPs,
+	 *        false to disable this option and use TextRazor's proxies.
+	 */
+	public void setDownloadUseStaticIPs(Boolean downloadUseStaticIPs) {
+		this.downloadUseStaticIPs = downloadUseStaticIPs;
+	}
+
+	/**
 	 * @return The cleanup HTML precision level.
 	 */
 	public Integer getCleanupCleanHTMLPrecision() {
@@ -349,6 +368,21 @@ public class TextRazor extends TextRazorConnection {
 	 */
 	public void setAllowOverlap(boolean allowOverlap) {
 		this.allowOverlap = allowOverlap;
+	}
+
+	/**
+	 * @return Whether address places should be included.
+	 */
+	public Boolean getIncludeAddressPlaces() {
+		return includeAddressPlaces;
+	}
+
+	/**
+	 * @param includeAddressPlaces true to include address places in entity extraction,
+	 *        false to disable this option.
+	 */
+	public void setIncludeAddressPlaces(Boolean includeAddressPlaces) {
+		this.includeAddressPlaces = includeAddressPlaces;
 	}
 	
 	/**
