@@ -13,24 +13,40 @@ Visit https://www.textrazor.com to find out more.
 Getting Started
 ===============
 
-- Download the latest [TextRazor JAR](https://github.com/TextRazor/textrazor-java/blob/master/bin/textrazor-1.0.12.jar).
-  
-  TextRazor for Java depends on the Jackson JSON library, specifically jackson-core-2.9.8.jar, jackson-annotations-2.9.8.jar, jackson-databind-2.12.7.1.jar.  Ensure that these are on your classpath when running your project.
+Requires Java 8 or later. Add the dependency to your Maven pom.xml:
 
-- Alternatively, if you use Maven you can add a dependency to TextRazor in your pom.xml:
-
-```
+```xml
 <dependency>
   <groupId>com.textrazor</groupId>
   <artifactId>textrazor</artifactId>
-  <version>1.0.13</version>
+  <version>1.0.15</version>
 </dependency> 
 ```
+
+Maven includes the required Jackson dependencies automatically. Version 1.0.15 uses the Jackson 2.21.7 BOM, which selects jackson-core 2.21.7, jackson-annotations 2.21, and jackson-databind 2.21.7.
+
+For manual installation, download the JAR from [Maven Central](https://central.sonatype.com/artifact/com.textrazor/textrazor/1.0.15) and include those Jackson JARs on your classpath.
 
 Usage
 =====
 
-You'll need a [free API key](https://www.textrazor.com) to add to your requests, see [an example](https://github.com/crayston/textrazor-java/blob/master/test/com/textrazor/TestTextRazor.java) to get going.
+You'll need a [free API key](https://www.textrazor.com). Set it in the `TEXTRAZOR_API_KEY` environment variable, then analyze text:
+
+```java
+import com.textrazor.TextRazor;
+import com.textrazor.annotations.AnalyzedText;
+import com.textrazor.annotations.Entity;
+
+TextRazor client = new TextRazor(System.getenv("TEXTRAZOR_API_KEY"));
+client.addExtractor("entities");
+
+AnalyzedText result = client.analyze("Apple is based in Cupertino, California.");
+for (Entity entity : result.getResponse().getEntities()) {
+    System.out.println(entity.getEntityId());
+}
+```
+
+Call this code from a method that handles or declares `NetworkException` and `AnalysisException`.
 
 Full JavaDoc can be found as part of the package, or you can browse more comprehensive documentation [at the TextRazor site](https://www.textrazor.com/docs/java).
 
