@@ -59,13 +59,6 @@
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
 		</dependency>
-
-		<dependency>
-			<groupId>org.apache.maven.plugins</groupId>
-			<artifactId>maven-release-plugin</artifactId>
-			<version>3.1.0</version>
-			<type>maven-plugin</type>
-		</dependency>
 	</dependencies>
 
 	<!-- Use apache pom as parent, so we can release to the remote repo -->
@@ -79,6 +72,11 @@
 	<build>
 		<sourceDirectory>src/</sourceDirectory>
 		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-release-plugin</artifactId>
+				<version>3.1.0</version>
+			</plugin>
 			<plugin>
 				<groupId>org.sonatype.central</groupId>
 				<artifactId>central-publishing-maven-plugin</artifactId>
